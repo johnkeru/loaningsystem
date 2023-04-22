@@ -2,49 +2,86 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\LoginRequest;
-use App\Http\Requests\RegisterRequest;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rules\Password;
 
 class UserController extends Controller
 {
-    function store(RegisterRequest $request)
+    function register()
     {
-        $data = $request->validated();
-        $data['password'] = Hash::make($data['password']);
-        $user = User::create($data);
-        if ($user) {
-            session()->put('uid', $user['id']);
-            session()->put('username', $user['username']);
-            return redirect(route('listings.index'));
-        } else {
-            return back()->with('fail', 'Something went wrong. Please try again.');
+        try {
+            $data = $this->validateData([
+                'name' => 'required|max:255',
+                'email' => 'required|max:255|unique:users|email',
+                'password' => ['required', Password::defaults()],
+            ]);
+            $user = new User();
+            $user->name = request()->name;
+            $user->email = request()->email;
+            $user->password = Hash::make(request()->password);
+            $user->money = 0;
+            $user->save();
+
+            $expiration = now()->addMinutes(config('sanctum.expiration'));
+            $data['expiration'] = $expiration;
+            $data['token'] = $user->createToken('ACCESSTOKEN', ['expiration' => $expiration],  $expiration)->plainTextToken;
+            $data['user'] = $user;
+            $data['success'] = true;
+        } catch (\Throwable $th) {
+            $data['success'] =  false;
+            $data['errors'] =  'The email has already been taken';
         }
+        return response()->json(['data' => $data]);
     }
 
-    public function authLogin(LoginRequest $request)
+    public function login()
     {
-        $user = User::where('username', '=', $request->username)->first();
-        if ($user) {
-            if (Hash::check($request->password, $user['password'])) {
-                session()->put('uid', $user['id']);
-                session()->put('username', $user['username']);
-                return redirect(route('listings.index'));
+        try {
+            $data = $this->validateData(['email' => 'required|email', 'password' => ['required', Password::defaults()]]);
+            $user = User::where('email', request()->email)->first();
+            if ($user && Hash::check(request()->password, $user->password)) {
+                $expiration = now()->addMinutes(config('sanctum.expiration'));
+                $data['expiration'] = $expiration;
+                $data['token'] = $user->createToken('ACCESSTOKEN', ['expiration' => $expiration],  $expiration)->plainTextToken;
+                $data['user'] = $user;
+                $data['success'] = true;
             } else {
-                return back()->with('fail', 'Password is incorrect.');
+                $data['success'] = false;
+                $data['errors'] = 'Incorrect email or password.';
             }
-        } else {
-            return back()->with('fail', 'Username not found.');
+        } catch (\Throwable $th) {
+            $data['success'] =  false;
+            $data['errors'] =  $th . 'error occur in catch';
         }
+        return response()->json(['data' => $data]);
     }
 
-    public function authLogout()
+    public function logout()
     {
-        if (session()->has('uid')) {
-            session()->pull('uid');
-            session()->pull('username');
-            return redirect(route('index'));
+        Auth::user()->currentAccessToken()->delete();
+        return response()->json(['message' => 'you are now logout.']);
+    }
+
+    public function test()
+    {
+        return response()->json('hehehehe');
+    }
+
+    public function validateData(array $rules)
+    {
+
+        $validator = Validator::make(request()->all(), $rules);
+        if ($validator->fails()) {
+            $data['success'] = false;
+            $data['errors'] = $validator->errors();
+            $fieldNames = $data['errors']->keys();
+            $errorMessages = $data['errors']->all();
+            $data['field'] = $fieldNames[0];
+            $data['message'] = $errorMessages[0];
+            return $data;
         }
     }
 }

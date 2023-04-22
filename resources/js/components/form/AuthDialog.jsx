@@ -1,57 +1,139 @@
-import { Grid, IconButton, Typography } from '@mui/material';
-import Dialog from '@mui/material/Dialog';
-import { Formik, Form } from 'formik';
-import React, { useState } from 'react';
-import InputField from '../utils/InputField';
-import {HighlightOffOutlined} from '@mui/icons-material';
-import {Button} from '@mui/material'
-import RegisterDialog from './RegisterDialog'
+import { Grid, IconButton, Typography } from "@mui/material";
+import Dialog from "@mui/material/Dialog";
+import { Formik, Form } from "formik";
+import React, { useState } from "react";
+import InputField from "../utils/InputField";
+import { HighlightOffOutlined } from "@mui/icons-material";
+import { Button } from "@mui/material";
+import RegisterDialog from "./RegisterDialog";
 
-export default function AuthDialog() {
-  const [open, setOpen] = useState(false);
-  const handleClickOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+import { useDispatch } from "react-redux";
+import { setLoggedIn } from "../../store/reducers/current_user_slice";
+import axios from "axios";
 
-  const handleSubmit = (values) => {
-    console.log(values)
-  }
+import url from "../../global/urls/auth";
 
-  return (
-    <div>
-      <Typography variant='overline' sx={{textTransform: 'capitalize', cursor: 'pointer'}} onClick={handleClickOpen}>Sign in</Typography>
-      
-      <Dialog open={open} 
-        onClose={handleClose}
-        fullWidth={true}
-        maxWidth={'xs'}
-      >
-          <IconButton sx={{position: 'absolute', top: 1, right: 1}} onClick={handleClose}>
-            <HighlightOffOutlined/>
-          </IconButton>
+export default function AuthDialog({ setIsAuthClick }) {
+    const dispatch = useDispatch();
 
-          <Grid sx={{textAlign: 'center', py: 2, px: 5}}>
-            <Typography variant='h6' sx={{mt: 3}}>Welcome to Krib</Typography>
-            <Typography variant='h6' sx={{fontWeight: 'bold', color: 'blue'}}>Sign In to continue</Typography>
-          </Grid>
+    const [open, setOpen] = useState(false);
+    const handleClickOpen = () => {
+        setOpen(true);
+        setIsAuthClick(true);
+    };
+    const handleClose = () => {
+        setOpen(false);
+        setIsAuthClick(false);
+    };
 
-          <Grid sx={{bgcolor: '#e3e3e3'}}>
-            <Grid sx={{px: 4, py: 3}}>
-              <Formik initialValues={{email: '', password: ''}} onSubmit={handleSubmit}>
-                <Form>
-                  <InputField name={'email'} placeholder='Email Address'/>
-                  <InputField name={'password'} placeholder="Password"/>
+    const handleSubmit = (values, { setErrors }) => {
+        axios.post(url.LOGIN, values).then((res) => {
+            const data = res.data.data;
+            if (!data.success) {
+                setErrors({ [data.field]: data.message });
+                return;
+            }
+            dispatch(setLoggedIn());
+            handleClose();
+        });
+    };
 
-                  <Button type='submit' variant='contained' fullWidth sx={{py: 1.5, mt: 2, textTransform: 'capitalize'}}>Login</Button>
-                  <Grid display='flex' flexDirection='row' alignItems='center' justifyContent='center' mt={3}>
-                    <Typography sx={{fontSize: '13px', mr: 1}}>New to Krib? </Typography>
-                    <RegisterDialog handleCloseAll={handleClose}/>
-                  </Grid>
-                </Form>
-              </Formik>
-            </Grid>
-          </Grid>
+    return (
+        <div>
+            <Button
+                onClick={handleClickOpen}
+                color="primary"
+                sx={{
+                    py: 2,
+                    px: 15,
+                    fontWeight: 700,
+                    background: "white",
+                    ":hover": {
+                        background: "white",
+                        color: "green",
+                    },
+                }}
+            >
+                Sign In
+            </Button>
 
-      </Dialog>
-    </div>
-  );
+            <Dialog
+                open={open}
+                onClose={handleClose}
+                fullWidth={true}
+                maxWidth={"xs"}
+            >
+                <IconButton
+                    sx={{ position: "absolute", top: 1, right: 1 }}
+                    onClick={handleClose}
+                >
+                    <HighlightOffOutlined />
+                </IconButton>
+
+                <Grid sx={{ textAlign: "center", py: 2, px: 5 }}>
+                    <Typography variant="h6" sx={{ mt: 3 }}>
+                        Welcome to Loaning
+                    </Typography>
+                    <Typography
+                        variant="h6"
+                        sx={{ fontWeight: "bold", color: "primary.main" }}
+                    >
+                        Sign In to continue
+                    </Typography>
+                </Grid>
+
+                <Grid sx={{ bgcolor: "#e3e3e3" }}>
+                    <Grid sx={{ px: 4, py: 3 }}>
+                        <Formik
+                            initialValues={{ email: "", password: "" }}
+                            onSubmit={handleSubmit}
+                        >
+                            <Form>
+                                <InputField
+                                    name={"email"}
+                                    placeholder="Email Address"
+                                />
+                                <InputField
+                                    name={"password"}
+                                    placeholder="Password"
+                                />
+
+                                <Button
+                                    type="submit"
+                                    variant="contained"
+                                    color="primary"
+                                    fullWidth
+                                    sx={{
+                                        py: 2,
+                                        fontWeight: 700,
+                                        ":hover": {
+                                            color: "white",
+                                        },
+                                    }}
+                                >
+                                    Login
+                                </Button>
+                                <Grid
+                                    display="flex"
+                                    flexDirection="row"
+                                    alignItems="center"
+                                    justifyContent="center"
+                                    mt={3}
+                                >
+                                    <Typography
+                                        sx={{ fontSize: "13px", mr: 1 }}
+                                    >
+                                        New to Loaning?{" "}
+                                    </Typography>
+                                    <RegisterDialog
+                                        handleCloseAll={handleClose}
+                                    />
+                                </Grid>
+                            </Form>
+                        </Formik>
+                    </Grid>
+                </Grid>
+            </Dialog>
+        </div>
+    );
 }
