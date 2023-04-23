@@ -65,9 +65,21 @@ class UserController extends Controller
         return response()->json(['message' => 'you are now logout.']);
     }
 
-    public function test()
+    public function add_money()
     {
-        return response()->json('hehehehe');
+        $data = $this->validateData(['money' => 'required|integer']);
+        if($data){
+            return response()->json(['data' => $data]);
+        }
+        $request_money = request()->money;
+        if($request_money > 1000000000){
+            return response()->json(['success' => false, 'field' => 'money', 'message' => 'Please enter a value less than or equal to 1 billion.']);
+        }else {
+            $user = Auth::user();
+            $user->money += $request_money;
+            $user->save();
+            return response()->json(['success' => true, 'user' => $user]);
+        }
     }
 
     public function validateData(array $rules)

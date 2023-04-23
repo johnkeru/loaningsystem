@@ -7,14 +7,15 @@ import { HighlightOffOutlined } from "@mui/icons-material";
 import { Button } from "@mui/material";
 import RegisterDialog from "./RegisterDialog";
 
-import { useDispatch } from "react-redux";
-import { setLoggedIn } from "../../store/reducers/current_user_slice";
 import axios from "axios";
 
 import url from "../../global/urls/auth";
 
+import useAuth from "../../hooks/useAuth";
+
+
 export default function AuthDialog({ setIsAuthClick }) {
-    const dispatch = useDispatch();
+    const {storeData} = useAuth()
 
     const [open, setOpen] = useState(false);
     const handleClickOpen = () => {
@@ -33,7 +34,7 @@ export default function AuthDialog({ setIsAuthClick }) {
                 setErrors({ [data.field]: data.message });
                 return;
             }
-            dispatch(setLoggedIn());
+            storeData({data});
             handleClose();
         });
     };

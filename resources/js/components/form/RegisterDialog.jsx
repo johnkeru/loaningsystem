@@ -6,14 +6,13 @@ import InputField from "../utils/InputField";
 import { HighlightOffOutlined } from "@mui/icons-material";
 import { Button } from "@mui/material";
 
-import { useDispatch } from "react-redux";
-import { setLoggedIn } from "../../store/reducers/current_user_slice";
+import useAuth from "../../hooks/useAuth";
 
 import url from "../../global/urls/auth";
 import axios from "axios";
 
 export default function RegisterDialog({ handleCloseAll }) {
-    const dispatch = useDispatch();
+    const {storeData} = useAuth()
 
     const [open, setOpen] = useState(false);
     const handleClickOpen = () => setOpen(true);
@@ -30,7 +29,7 @@ export default function RegisterDialog({ handleCloseAll }) {
                 setErrors({ [data.field]: data.message });
                 return;
             }
-            dispatch(setLoggedIn());
+            storeData(data);
             handleClose();
         });
     };

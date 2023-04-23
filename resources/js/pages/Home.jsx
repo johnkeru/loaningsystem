@@ -1,12 +1,11 @@
 import React from "react";
 import Banner from "../components/home/Banner";
 import Category from "../components/home/Category";
-import { useSelector } from "react-redux";
+import useAuth from "../hooks/useAuth";
 
 const Home = () => {
-    const isLogged = useSelector((root) => root.current_user.isLogged);
-
-    return <div>{isLogged ? <Category /> : <Banner />}</div>;
+    const {user} = useAuth()
+    return <div>{user ? <Category user={user}/> : <Banner />}</div>;
 };
 
 export default Home;
