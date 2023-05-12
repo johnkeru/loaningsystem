@@ -17,26 +17,29 @@ const useAuth = () => {
     }, [cookies.token, cookies.user]);
 
     const storeData = ({ data }) => {
-        const expirationDate = new Date(data.expiration);
+        const expirationDate = new Date(data?.expiration);
         setCookie("token", data.token, { path: "/", expires: expirationDate });
         setCookie("user", data.user, { path: "/", expires: expirationDate });
     };
 
     const modifyUser = (user) => {
         setCookie("user", user);
-    }
+    };
 
     const destroy = (close) => {
-        axios.post(
-            "/api/logout",
-            {},
-            { headers: { Authorization: "Bearer " + token } }
-        ).then(() => {
-            removeCookie("token");
-            removeCookie("user");
-            close()
-            // nav('/login')
-        }).catch(() => alert('Something went wrong!'))
+        axios
+            .post(
+                "/api/logout",
+                {},
+                { headers: { Authorization: "Bearer " + token } }
+            )
+            .then(() => {
+                removeCookie("token");
+                removeCookie("user");
+                close();
+                // nav('/login')
+            })
+            .catch(() => alert("Something went wrong!"));
     };
 
     return { token, user, destroy, storeData, modifyUser };

@@ -1,8 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
-import listingsSlice from "./reducers/listings_slice";
+import lendersSlice from "./reducers/lenders_slice";
+import borrowersSlice from "./reducers/borrowers_slice";
 
 export default configureStore({
     reducer: {
-        listing: listingsSlice,
+        lendersSlice,
+        borrowersSlice,
     },
 });

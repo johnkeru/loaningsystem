@@ -1,9 +1,40 @@
+POST http://localhost:8000/api/register
+Content-Type: application/json
+
+{
+    "name": "keru",
+    "email": "kerutman@gmail.com",
+    "password": "kerutman"
+}
+
+###
+POST http://localhost:8000/api/create_lender
+Content-Type: application/json
+Authorization: Bearer 3|QJoEiH5gAxmSoBEpRIfy4JzOUZK65WkpuVhrVpDg
+
+{
+    "amount": 100,
+    "lender_name": "keru",
+    "lender_email": "kerutman@gmail.com",
+    "lender_avatar": "",
+    "interest": 10
+}
+###
+PATCH http://localhost:8000/api/update_lended_amount
+Content-Type: application/json
+Authorization: Bearer 3|QJoEiH5gAxmSoBEpRIfy4JzOUZK65WkpuVhrVpDg
+
+{
+    "amount": 800,
+    "interest": 10
+}
+###
 POST http://localhost:8000/api/login
 Content-Type: application/json
 
 {
-    "email": "keru@gmail.com",
-    "password": "kerutman"
+    "email": "fatima@gmail.com",
+    "password": "fatima"
 }
 ###
 PATCH http://localhost:8000/api/add_money
@@ -16,3 +47,7 @@ Authorization: Bearer 18|F7MqkwAz0L2hKyggF2bzNz7T0E7swjyCuSgWAaF7
 ###
 GET http://localhost:8000/api/user
 Authorization: Bearer 18|F7MqkwAz0L2hKyggF2bzNz7T0E7swjyCuSgWAaF7
+
+###
+GET http://localhost:8000/api/count_borrowers_and_lended
+Authorization:  Bearer 12|6jBpx6JTYh1ihsLjDhHfrH20rl2GkJbczRmVhdSj

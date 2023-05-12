@@ -5,12 +5,20 @@ import AuthDialog from "../form/AuthDialog";
 const Index = () => {
     const [next, setNext] = useState(1);
     const [isAuthClick, setIsAuthClick] = useState(false);
+    const bannerWords = [
+        "Welcome to Loaning System!",
+        "Be a borrower",
+        "Be a lender",
+        "Repayment",
+        "Principals",
+        "Start your first loan!",
+    ];
 
     useEffect(() => {
         const intervalId = setInterval(() => {
-            if (next === 5) setNext(1);
+            if (next === 6) setNext(1);
             else setNext(next + 1);
-        }, 5000);
+        }, 2000);
         return () => clearInterval(intervalId);
     }, [next]);
 
@@ -75,7 +83,7 @@ const Index = () => {
                                 },
                             }}
                         >
-                            Start your first loan!
+                            {bannerWords[next - 1]}
                         </Typography>
                     )}
 

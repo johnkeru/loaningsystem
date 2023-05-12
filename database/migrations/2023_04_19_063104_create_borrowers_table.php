@@ -17,8 +17,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId('borrower_id');
             $table->foreignId('lender_id');
-            $table->integer('borrowed_amount');
-            $table->integer('lended_amount');
+            $table->foreignId('lend_id');
+            $table->integer('interest');
+            $table->double('borrowed'); // principal
+            $table->double('borrowed_amount'); // principal + (principal * interest)
             $table->timestamps();
         });
     }
@@ -33,3 +35,5 @@ return new class extends Migration
         Schema::dropIfExists('borrowers');
     }
 };
+
+// php artisan migrate:refresh --path=/database/migrations/2023_04_19_063104_create_borrowers_table.php

@@ -13,9 +13,10 @@ import url from "../../global/urls/auth";
 
 import useAuth from "../../hooks/useAuth";
 
-
 export default function AuthDialog({ setIsAuthClick }) {
-    const {storeData} = useAuth()
+    const [error, setError] = useState("");
+
+    const { storeData } = useAuth();
 
     const [open, setOpen] = useState(false);
     const handleClickOpen = () => {
@@ -28,14 +29,24 @@ export default function AuthDialog({ setIsAuthClick }) {
     };
 
     const handleSubmit = (values, { setErrors }) => {
-        axios.post(url.LOGIN, values).then((res) => {
-            const data = res.data.data;
-            if (!data.success) {
-                setErrors({ [data.field]: data.message });
-                return;
-            }
-            storeData({data});
-            handleClose();
+        axios.get("/sanctum/csrf-cookie").then(() => {
+            axios
+                .post(url.LOGIN, values)
+                .then((res) => {
+                    const data = res.data.data;
+                    if (!data.success) {
+                        setErrors({ [data.field]: data.message });
+                        if (data.field) {
+                            setError("");
+                        } else {
+                            setError(data?.errors);
+                        }
+                        return;
+                    }
+                    storeData({ data });
+                    handleClose();
+                })
+                .catch((err) => console.log("🚀", err));
         });
     };
 
@@ -85,6 +96,7 @@ export default function AuthDialog({ setIsAuthClick }) {
 
                 <Grid sx={{ bgcolor: "#e3e3e3" }}>
                     <Grid sx={{ px: 4, py: 3 }}>
+                        <Typography color="red">{error}</Typography>
                         <Formik
                             initialValues={{ email: "", password: "" }}
                             onSubmit={handleSubmit}
@@ -93,8 +105,10 @@ export default function AuthDialog({ setIsAuthClick }) {
                                 <InputField
                                     name={"email"}
                                     placeholder="Email Address"
+                                    type="email"
                                 />
                                 <InputField
+                                    type="password"
                                     name={"password"}
                                     placeholder="Password"
                                 />

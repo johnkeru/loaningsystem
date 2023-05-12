@@ -16,7 +16,11 @@ return new class extends Migration
         Schema::create('lenders', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->integer('amount');
+            $table->double('amount');
+            $table->string('lender_name');
+            $table->string('lender_email');
+            $table->string('lender_avatar')->nullable();
+            $table->integer('interest')->default(0);
             $table->foreignId('user_id');
         });
     }

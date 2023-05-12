@@ -12,7 +12,7 @@ import url from "../../global/urls/auth";
 import axios from "axios";
 
 export default function RegisterDialog({ handleCloseAll }) {
-    const {storeData} = useAuth()
+    const { storeData } = useAuth();
 
     const [open, setOpen] = useState(false);
     const handleClickOpen = () => setOpen(true);
@@ -29,7 +29,7 @@ export default function RegisterDialog({ handleCloseAll }) {
                 setErrors({ [data.field]: data.message });
                 return;
             }
-            storeData(data);
+            storeData({ data });
             handleClose();
         });
     };
@@ -92,10 +92,12 @@ export default function RegisterDialog({ handleCloseAll }) {
                                 <InputField
                                     name={"email"}
                                     placeholder="Email Address"
+                                    type="email"
                                 />
                                 <InputField
                                     name={"password"}
                                     placeholder="Password"
+                                    type="Password"
                                 />
 
                                 <Button

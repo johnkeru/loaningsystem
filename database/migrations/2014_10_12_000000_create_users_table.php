@@ -19,7 +19,13 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->integer('money')->default(0);
+            $table->boolean('is_lended')->default(false);
+            $table->boolean('is_borrowed')->default(false);
+            $table->boolean('has_borrowed')->default(false);
+            $table->double('borrowed')->default(0);
+            $table->double('lended')->default(0);
+            $table->string('avatar')->default('');
+            $table->double('money')->default(0);
             $table->rememberToken();
             $table->timestamps();
         });
