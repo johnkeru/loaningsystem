@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Borrower;
+use App\Models\History;
 use App\Models\Lender;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -11,6 +12,9 @@ class BorrowerController extends Controller
 {
     function create_borrower()
     {
+        $history = new History();
+        $history->user_id = Auth::id();
+
         $orig_borrowed = request()->borrowed;
         $borrowed_amount = request()->borrowed_amount;
 
@@ -34,6 +38,9 @@ class BorrowerController extends Controller
             $borrow->borrowed_amount += $borrowed_amount;
             $borrow->borrowed += $borrowed_amount;
             $borrow->save();
+
+            $history->message = "You've borrowed again from " . $lender -> name . " with borrowed amount of " . $borrowed_amount . ".";
+            $history->save();
         } else {
             Borrower::create([
                 'borrower_id' => $borrower->id,
@@ -43,6 +50,8 @@ class BorrowerController extends Controller
                 'borrowed' => $orig_borrowed,
                 'borrowed_amount' => $borrowed_amount,
             ]);
+            $history->message = "You've borrowed from " . $lender -> name . " with borrowed amount of " . $borrowed_amount . ".";
+            $history->save();
         }
 
         $borrower->borrowed += $borrowed_amount;
@@ -69,6 +78,10 @@ class BorrowerController extends Controller
 
     function payment()
     {
+
+        $history = new History();
+        $history->user_id = Auth::id();
+
         $borrower = Auth::user();
         $lender = User::find(request()->lender_id);
         $payment_amount = request()->payment_amount;
@@ -98,8 +111,12 @@ class BorrowerController extends Controller
             }
             $borrowed->borrowed_amount -= $payment_amount;
             $borrowed->save();
+            $history->message = "You've repaid with amount of " . $payment_amount . "to " . $lender->name;
+            $history->save();
         } else {
             $borrowed->delete();
+            $history->message = "You've fully paid to " . $lender->name;
+            $history->save();
         }
 
         return [

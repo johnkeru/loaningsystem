@@ -37,7 +37,7 @@ const Category = ({ user, token, modifyUser }) => {
                     ) : (
                         <Card src="landing-images/2.jpg" title="Be a lender" />
                     )}
-                    <Card src="landing-images/3.jpg" title="Principals" />
+                    <Card src="landing-images/3.jpg" title="History" />
                     <Card src="landing-images/4.jpg" title="Repayment" />
                 </Grid>
             </Grid>

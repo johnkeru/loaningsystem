@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BorrowerController;
+use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\LenderController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -42,4 +43,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('create_borrower', [BorrowerController::class, 'create_borrower']);
     Route::get('count_borrowers_and_lended', [BorrowerController::class, 'count_borrowers_and_lended']);
     Route::post('payment', [BorrowerController::class, 'payment']);
+
+    // HISTORY ENDPOINTS
+    Route::get('histories', [HistoryController::class, 'get_histories']);
+    Route::delete('delete_history/{id}', [HistoryController::class, 'deleteHistory']);
 });

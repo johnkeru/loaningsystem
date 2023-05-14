@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\History;
 use App\Models\Lender;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -83,12 +84,18 @@ class UserController extends Controller
 
     public function add_money()
     {
+        $user = Auth::user();
+
+        $history = new History();
+        $history->user_id = $user->id;
+
         $request_money = request()->money;
         if ($request_money > 1000000000) {
             return response()->json(['success' => false, 'field' => 'money', 'message' => 'Please enter a value less than or equal to 1 billion.']);
         } else {
-            $user = Auth::user();
             $user->money += $request_money;
+            $history->message = "You deposit $request_money to your account";
+            $history->save();
             $user->save();
             return response()->json(['success' => true, 'user' => $user]);
         }

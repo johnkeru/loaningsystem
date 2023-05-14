@@ -44,6 +44,36 @@ const SideProfileImageUploadDialog = ({ user, token, modifyUser }) => {
     const [preview, setPreview] = useState(null);
     const [error, setError] = useState("");
 
+    const [croppedImageUrl, setCroppedImageUrl] = useState(null);
+    const [crop, setCrop] = useState({
+        unit: "px", // Can be 'px' or '%'
+        x: 25,
+        y: 25,
+        width: 50,
+        height: 50,
+    });
+
+    function onCropComplete(crop) {
+        const image = document.querySelector("#preselect_img");
+        const canvas = document.createElement("canvas");
+        canvas.width = crop.width;
+        canvas.height = crop.height;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(
+            image,
+            crop.x,
+            crop.y,
+            crop.width,
+            crop.height,
+            0,
+            0,
+            crop.width,
+            crop.height
+        );
+        const base64Image = canvas.toDataURL();
+        setCroppedImageUrl(base64Image);
+    }
+
     const onDrop = useCallback((acceptedFiles) => {
         const file = acceptedFiles[0];
 
@@ -142,8 +172,10 @@ const SideProfileImageUploadDialog = ({ user, token, modifyUser }) => {
                             >
                                 {isCrop ? (
                                     <TestCropper
+                                        crop={crop}
+                                        croppedImageUrl={croppedImageUrl}
+                                        setCrop={setCrop}
                                         src={preview}
-                                        setSrc={setFile}
                                     />
                                 ) : (
                                     <img
@@ -199,19 +231,32 @@ const SideProfileImageUploadDialog = ({ user, token, modifyUser }) => {
                     >
                         <Button
                             variant="contained"
-                            onClick={handleClose}
+                            onClick={
+                                isCrop ? () => setIsCrop(false) : handleClose
+                            }
                             color="secondary"
                         >
                             Cancel
                         </Button>
-                        <Button
-                            disabled={!preview}
-                            variant="contained"
-                            type="submit"
-                            onClick={handleProfileUpload}
-                        >
-                            Upload
-                        </Button>
+                        {isCrop ? (
+                            <Button
+                                disabled={!preview}
+                                variant="contained"
+                                type="submit"
+                                // onClick={() => onCropComplete(crop)}
+                            >
+                                Save Crop
+                            </Button>
+                        ) : (
+                            <Button
+                                disabled={!preview}
+                                variant="contained"
+                                type="submit"
+                                onClick={handleProfileUpload}
+                            >
+                                Upload
+                            </Button>
+                        )}
                     </ButtonGroup>
 
                     {file && !isCrop && (

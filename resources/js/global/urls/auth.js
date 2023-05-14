@@ -19,6 +19,10 @@ const CREATE_BORROWER = "api/create_borrower";
 const COUNT_BORROWERS_AND_LENDED = "api/count_borrowers_and_lended";
 const PAYMENT = "api/payment";
 
+// HISTORY URI
+const HISTORIES = "api/histories";
+const DELETE_HISTORY = "api/delete_history/"; // with id
+
 export default {
     TEST,
     USER,
@@ -36,4 +40,7 @@ export default {
     CREATE_BORROWER,
     COUNT_BORROWERS_AND_LENDED,
     PAYMENT,
+
+    HISTORIES,
+    DELETE_HISTORY,
 };

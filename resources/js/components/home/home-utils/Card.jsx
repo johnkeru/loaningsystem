@@ -1,11 +1,11 @@
 import { Grid } from "@mui/material";
 import React from "react";
-import LenderDialog from "./LenderDialog";
-import BorrowerDialog from "./BorrowerDialog";
-import PrincipalsDialog from "./PrincipalsDialog";
-import LenderAdditionDialog from "./LenderAdditionDialog";
-import SideProfileBorrowedFrom from "./SideProfileBorrowedFrom";
 import { useSelector } from "react-redux";
+import BorrowerDialog from "./BorrowerDialog";
+import HistoryDialog from "./HistoryDialog";
+import LenderAdditionDialog from "./LenderAdditionDialog";
+import LenderDialog from "./LenderDialog";
+import SideProfileBorrowedFrom from "./SideProfileBorrowedFrom";
 
 const Card = ({ src, title }) => {
     const borrowers = useSelector((root) => root.borrowersSlice);
@@ -56,7 +56,7 @@ const Card = ({ src, title }) => {
                 {title === "Additional Lend" && (
                     <LenderAdditionDialog title={title} />
                 )}
-                {title === "Principals" && <PrincipalsDialog title={title} />}
+                {title === "History" && <HistoryDialog />}
                 {title === "Repayment" && (
                     <SideProfileBorrowedFrom
                         borrowed_from_count={borrowers.borrowed_from_count}
